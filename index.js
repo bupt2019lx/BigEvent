@@ -5,6 +5,7 @@ app.listen(3000, () => {
 })
 const db = require('./db')
 const md5 = require('md5');
+const jwt = require('jsonwebtoken')
 
 // ------------------------------------------------------注册接口-------------------------------------------------------------------
 app.use(express.urlencoded({
@@ -46,9 +47,17 @@ app.post('/api/login', (req, res) => {
     db(`select * from user where username='${username}' and password='${password}'`, (err, result) => {
         if (err) throw err
         if (result.length > 0) {
+            let token = 'Bearer ' + jwt.sign({
+                    id: result[0].id
+                },
+                'jiligulumamahaha', {
+                    expiresIn: '2h'
+                }
+            )
             res.send({
                 status: 0,
-                message: '登录成功'
+                message: '登录成功',
+                token
             })
         } else {
             res.send({
