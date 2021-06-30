@@ -5,6 +5,21 @@ const db = require('../db')
 const md5 = require('md5');
 const jwt = require('jsonwebtoken')
 
+//------------------------------------------------------中间件验证--------------------------------------------------------------
+router.use((req, res, next) => {
+    let {
+        username,
+        password
+    } = req.body;
+    if (username.length < 2 || username.length > 10) {
+        next('用户名长度不对')
+    } else if (password.length < 2 || password.length > 12) {
+        next('密码长度不对')
+    } else {
+        next();
+    }
+})
+
 router.post('/reguser', (req, res) => {
     let {
         username,
@@ -62,4 +77,10 @@ router.post('/login', (req, res) => {
     })
 })
 
+router.use((err, req, res, next) => {
+    res.send({
+        status: 1,
+        message: err
+    })
+})
 module.exports = router;
